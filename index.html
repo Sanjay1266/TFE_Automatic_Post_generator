@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
-    <!-- IMPORTANT for mobile -->
+    <!-- Mobile-first -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <title>Tech Fest Social Share</title>
@@ -13,31 +14,39 @@
 
 <body>
 
-    <div class="container">
+    <!-- =========================
+         HEADER WITH LOGOS
+    ========================= -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="images/anokha_2026.png" alt="Anokha Logo" width="220">
+            <img src="images/tf_black.png" alt="TechFair & Exhibitions Logo" width="190">
+            <img src="images/iic_logo.png" alt="IIC Logo" width="200">
+            <img src="images/atlsarthi.png" alt="ATL Sarthi Logo" width="250">
+        </div>
+    </header>
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+    <main class="container">
         <h1>SHARE THE TECH FEST</h1>
 
-        <p>
+        <p class="subtitle">
             Tap a platform below and share the Tech Fest instantly.
         </p>
 
-        <!-- Touch-friendly buttons -->
-        <button class="btn linkedin" id="linkedinBtn">
-            LinkedIn
-        </button>
+        <!-- Share Buttons -->
+        <button class="btn linkedin" id="linkedinBtn">LinkedIn</button>
+        <button class="btn twitter" id="twitterBtn">Twitter (X)</button>
+        <button class="btn instagram" id="instagramBtn">Instagram</button>
 
-        <button class="btn twitter" id="twitterBtn">
-            Twitter (X)
-        </button>
-
-        <button class="btn instagram" id="instagramBtn">
-            Instagram
-        </button>
-
-        <footer>
-            © 2026 Tech Fest
+        <footer class="footer">
+            © 2026 Anokha TechFair & Exhibitions
         </footer>
-    </div>
+    </main>
 
     <script src="script.js" defer></script>
 </body>
+
 </html>

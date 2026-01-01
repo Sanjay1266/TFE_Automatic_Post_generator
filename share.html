@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Student Innovation at Anokha Tech Fest">
+<meta property="og:description" content="Loading...">
+<meta property="og:url" content="https://yourdomain.com/share.html">
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const text = params.get("text");
+
+  if (text) {
+    document
+      .querySelector('meta[property="og:description"]')
+      .setAttribute("content", decodeURIComponent(text));
+  }
+</script>
+</head>
+<body></body>
+</html>

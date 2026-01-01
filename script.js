@@ -4,42 +4,51 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("instagramBtn").addEventListener("click", shareInstagram);
 });
 
-/* Fetch post content from JSON */
-async function getPost(platform) {
+/* Fetch JSON and return a random post */
+async function getRandomPost(platform) {
     try {
         const res = await fetch(`content/${platform}.json`);
         if (!res.ok) return null;
-        return await res.json();
-    } catch {
+
+        const data = await res.json();
+
+        // If array → randomize
+        if (Array.isArray(data)) {
+            return data[Math.floor(Math.random() * data.length)];
+        }
+
+        // Fallback (single object)
+        return data;
+    } catch (err) {
+        console.error("Failed to load content:", err);
         return null;
     }
 }
 
-/* 🔵 LINKEDIN — ALWAYS BROWSER (AUTO-TYPED TEXT + URL) */
+/* 🔵 LINKEDIN — TEXT ONLY */
 async function shareLinkedIn() {
-    const data = await getPost("linkedin");
-    if (!data) return;
+    const post = await getRandomPost("linkedin");
+    if (!post) return;
 
-    const text = encodeURIComponent(data.text);
-    const url = encodeURIComponent(data.url);
+    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
+    const text = encodeURIComponent(`${post.content}\n\n${hashtags}`);
 
     window.location.href =
-        `https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`;
+        `https://www.linkedin.com/sharing/share-offsite/?summary=${text}`;
 }
 
-/* 🟦 TWITTER (X) — APP FIRST, WEB FALLBACK */
+/* 🟦 TWITTER (X) — TEXT ONLY */
 async function shareTwitter() {
-    const data = await getPost("twitter");
-    if (!data) return;
+    const post = await getRandomPost("twitter");
+    if (!post) return;
 
-    const message = encodeURIComponent(`${data.text} ${data.url}`);
+    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
+    const message = encodeURIComponent(`${post.content}\n\n${hashtags}`);
+
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Try opening app
         window.location.href = `twitter://post?message=${message}`;
-
-        // If app not installed, browser fallback
         setTimeout(() => {
             if (document.visibilityState === "visible") {
                 window.location.href =
@@ -47,27 +56,26 @@ async function shareTwitter() {
             }
         }, 300);
     } else {
-        // Desktop → browser
         window.location.href =
             `https://twitter.com/intent/tweet?text=${message}`;
     }
 }
 
-/* 🟣 INSTAGRAM — APP ON MOBILE, WEB ON DESKTOP */
+/* 🟣 INSTAGRAM — COPY TEXT ONLY */
 async function shareInstagram() {
-    const data = await getPost("instagram");
-    if (!data) return;
+    const post = await getRandomPost("instagram");
+    if (!post) return;
 
-    // Auto-copy caption (maximum allowed)
-    await navigator.clipboard.writeText(data.text);
+    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
+    const caption = `${post.content}\n\n${hashtags}`;
+
+    await navigator.clipboard.writeText(caption);
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Mobile → open app
         window.location.href = "instagram://app";
     } else {
-        // Desktop → open website
         window.location.href = "https://www.instagram.com/";
     }
 }

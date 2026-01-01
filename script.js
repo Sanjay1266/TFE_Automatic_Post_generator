@@ -92,7 +92,11 @@ function shareInstagram() {
 
             // 2️⃣ COPY TEXT AFTER
             setTimeout(() => {
-                navigator.clipboard.writeText(caption).catch(() => {});
+                navigator.clipboard.writeText(caption)
+                    .then(() => {
+                        alert("✅ Content copied to clipboard.\nPaste it while posting on Instagram.");
+                    })
+                    .catch(() => {});
             }, 100);
 
             // 3️⃣ FALLBACK IF APP NOT OPENED
@@ -104,6 +108,7 @@ function shareInstagram() {
         } else {
             // Desktop
             navigator.clipboard.writeText(caption).then(() => {
+                alert("✅ Content copied to clipboard.\nPaste it while posting on Instagram.");
                 window.open("https://www.instagram.com/", "_blank");
             });
         }

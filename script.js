@@ -89,33 +89,20 @@ async function shareInstagram() {
     const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
     const caption = `${post.content}\n\n${hashtags}`;
 
-    // 🚫 Block desktop completely
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (!isMobile) {
-        alert("This feature is available only on mobile devices.");
-        return;
-    }
-
     try {
-        // 1️⃣ Fetch poster image
-        const response = await fetch("images/poster.png");
-        const blob = await response.blob();
-        const file = new File([blob], "anokha_poster.png", { type: blob.type });
+        await navigator.clipboard.writeText(caption);
+        
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-        // 2️⃣ Use native share sheet
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                text: caption,
-                title: "Anokha TechFair 2026"
-            });
-        } else {
-            // 3️⃣ Fallback: copy caption + open Instagram
-            await navigator.clipboard.writeText(caption);
+        if (isMobile) {
+            alert("Caption copied! Opening Instagram app...");
             window.location.href = "instagram://app";
+        } else {
+            alert("Caption copied to clipboard! Opening Instagram...\n\nPaste it when creating your post.");
+            window.open("https://www.instagram.com/", '_blank');
         }
     } catch (err) {
-        console.error(err);
-        alert("Sharing failed. Please try again.");
+        console.error("Clipboard copy failed:", err);
+        alert("Failed to copy caption. Please try again.");
     }
 }

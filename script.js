@@ -34,22 +34,26 @@ async function getRandomPost(platform) {
 /* ===============================
    💼 LINKEDIN
 ================================ */
+/* ===============================
+   💼 LINKEDIN (CLEAN URL VERSION)
+================================ */
 async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
     if (!post) return;
 
-    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
-    const fullText = `${post.content}\n\n${hashtags}`;
-    const encodedText = encodeURIComponent(fullText);
+    // ⚠️ IMPORTANT:
+    // We send ONLY the ID, NOT the content
+    const postId = post.id;
 
-    // ⚠️ IMPORTANT: Replace with your actual domain
-    const sharePage = `https://anokhatechfest.com/share.html?text=${encodedText}&cb=${Date.now()}`;
+    const sharePage =
+        `https://anokhatechfest.com/share.html?id=${postId}&cb=${Date.now()}`;
 
     window.open(
         `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`,
-        '_blank'
+        "_blank"
     );
 }
+
 
 /* ===============================
    🐦 TWITTER (X)

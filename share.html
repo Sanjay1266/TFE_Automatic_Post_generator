@@ -5,11 +5,14 @@
 
 <title>Anokha TechFair</title>
 
-<!-- LinkedIn Open Graph tags -->
+<!-- 🔵 LinkedIn Open Graph tags -->
 <meta property="og:type" content="article">
 <meta property="og:title" content="Anokha TechFair & Exhibitions">
 <meta property="og:description" content="Loading post...">
-<meta property="og:url" content="https://anokhatechfest.com/share.html">
+
+<!-- ✅ Correct GitHub Pages URL -->
+<meta property="og:url"
+      content="https://sanjay1266.github.io/TFE_Automatic_Post_generator/share.html">
 
 <script>
 (function () {
@@ -26,11 +29,15 @@
             const hashtags = post.hashtags.map(h => `#${h}`).join(" ");
             const text = `${post.content}\n\n${hashtags}`;
 
-            // 🔑 THIS is what LinkedIn reads
-            document
-                .querySelector('meta[property="og:description"]')
-                .setAttribute("content", text);
-        });
+            // 🔑 This is what LinkedIn reads
+            const ogDesc = document.querySelector(
+                'meta[property="og:description"]'
+            );
+            if (ogDesc) {
+                ogDesc.setAttribute("content", text);
+            }
+        })
+        .catch(err => console.error("LinkedIn OG load failed:", err));
 })();
 </script>
 </head>

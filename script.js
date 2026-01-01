@@ -14,26 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
 async function getRandomPost(platform) {
     try {
         const res = await fetch(`content/${platform}.json`);
-        if (!res.ok) throw new Error("Failed to fetch content");
+        if (!res.ok) throw new Error(`Failed to fetch ${platform} content`);
 
         const data = await res.json();
 
-        // If array → randomize
+        // Randomize if array
         if (Array.isArray(data)) {
             return data[Math.floor(Math.random() * data.length)];
         }
 
-        // Fallback for single object
         return data;
     } catch (err) {
         console.error(`Error loading ${platform} content:`, err);
+        alert(`Failed to load ${platform} content. Please try again.`);
         return null;
     }
 }
 
 /* ===============================
-   🔵 LINKEDIN
-   (Uses OG-based share.html)
+   💼 LINKEDIN
 ================================ */
 async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
@@ -43,51 +42,45 @@ async function shareLinkedIn() {
     const fullText = `${post.content}\n\n${hashtags}`;
     const encodedText = encodeURIComponent(fullText);
 
-    // share.html MUST be publicly hosted
-    const sharePage =
-        `https://yourdomain.com/share.html?text=${encodedText}&cb=${Date.now()}`;
+    // ⚠️ IMPORTANT: Replace with your actual domain
+    const sharePage = `https://anokhatechfest.com/share.html?text=${encodedText}&cb=${Date.now()}`;
 
-    window.location.href =
-        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`;
+    window.open(
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`,
+        '_blank'
+    );
 }
 
 /* ===============================
-   🟦 TWITTER (X)
+   🐦 TWITTER (X)
 ================================ */
 async function shareTwitter() {
     const post = await getRandomPost("twitter");
     if (!post) return;
 
-    // Build tweet text
-    const tweetText = post.url
-        ? `${post.text}\n${post.url}`
-        : post.text;
-
+    const tweetText = post.url ? `${post.text}\n${post.url}` : post.text;
     const message = encodeURIComponent(tweetText);
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Try opening X app
+        // Try Twitter app first
         window.location.href = `twitter://post?message=${message}`;
 
-        // Browser fallback
+        // Fallback to web
         setTimeout(() => {
             if (document.visibilityState === "visible") {
-                window.location.href =
-                    `https://twitter.com/intent/tweet?text=${message}`;
+                window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank');
             }
-        }, 300);
+        }, 500);
     } else {
-        // Desktop browser
-        window.location.href =
-            `https://twitter.com/intent/tweet?text=${message}`;
+        // Desktop
+        window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank');
     }
 }
 
 /* ===============================
-   🟣 INSTAGRAM
-   (Clipboard + open app/site)
+   📸 INSTAGRAM
 ================================ */
 async function shareInstagram() {
     const post = await getRandomPost("instagram");
@@ -98,16 +91,18 @@ async function shareInstagram() {
 
     try {
         await navigator.clipboard.writeText(caption);
+        
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            alert("Caption copied! Opening Instagram app...");
+            window.location.href = "instagram://app";
+        } else {
+            alert("Caption copied to clipboard! Opening Instagram...\n\nPaste it when creating your post.");
+            window.open("https://www.instagram.com/", '_blank');
+        }
     } catch (err) {
         console.error("Clipboard copy failed:", err);
-        return;
-    }
-
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        window.location.href = "instagram://app";
-    } else {
-        window.location.href = "https://www.instagram.com/";
+        alert("Failed to copy caption. Please try again.");
     }
 }

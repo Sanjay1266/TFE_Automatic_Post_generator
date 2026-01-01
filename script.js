@@ -35,18 +35,20 @@ async function shareLinkedIn() {
     const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
     const text = `${post.content}\n\n${hashtags}`;
 
-    // 1️⃣ Copy content to clipboard
-    try {
-        await navigator.clipboard.writeText(text);
-        alert("✅ Content copied to clipboard.\nPaste it in LinkedIn to post.");
-    } catch (err) {
-        console.error("Clipboard copy failed", err);
-    }
+    // 1️⃣ OPEN LINKEDIN FIRST (gesture-safe)
+    const linkedInUrl = "https://www.linkedin.com/feed/?shareActive=true";
+    window.open(linkedInUrl, "_blank");
 
-    // 2️⃣ Open LinkedIn post creation
-    const linkedInShareUrl = "https://www.linkedin.com/feed/?shareActive=true";
-    window.open(linkedInShareUrl, "_blank");
+    // 2️⃣ COPY CONTENT AFTER
+    setTimeout(() => {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                alert("✅ Content copied to clipboard.\nPaste it in LinkedIn to post.");
+            })
+            .catch(err => console.error("Clipboard failed", err));
+    }, 100);
 }
+
 
 
 /* ===============================

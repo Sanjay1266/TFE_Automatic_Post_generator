@@ -21,8 +21,8 @@ async function getPost(platform) {
         }
         return await response.json();
     } catch (err) {
-        alert("Error loading post content. Check folder structure.");
-        console.error(err);
+        console.error("Failed to load content:", err);
+        return null;
     }
 }
 
@@ -48,12 +48,14 @@ async function shareTwitter() {
     window.open(shareURL, "_blank");
 }
 
-// Instagram
+// Instagram (mobile-friendly flow)
 async function shareInstagram() {
     const data = await getPost("instagram");
     if (!data) return;
 
+    // Copy caption silently
     await navigator.clipboard.writeText(data.text);
-    alert("Caption copied! Paste it on Instagram.");
+
+    // Open Instagram directly
     window.open("https://www.instagram.com", "_blank");
 }

@@ -32,14 +32,22 @@ async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
     if (!post) return;
 
-    const sharePage =
-        `https://anokhatechfest.com/share.html?id=${post.id}&cb=${Date.now()}`;
+    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
+    const text = `${post.content}\n\n${hashtags}`;
 
-    window.open(
-        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`,
-        "_blank"
-    );
+    // 1️⃣ Copy content to clipboard
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("✅ Content copied to clipboard.\nPaste it in LinkedIn to post.");
+    } catch (err) {
+        console.error("Clipboard copy failed", err);
+    }
+
+    // 2️⃣ Open LinkedIn post creation
+    const linkedInShareUrl = "https://www.linkedin.com/feed/?shareActive=true";
+    window.open(linkedInShareUrl, "_blank");
 }
+
 
 /* ===============================
    🐦 TWITTER (X)

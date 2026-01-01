@@ -76,36 +76,43 @@ async function shareTwitter() {
 /* ===============================
    📸 INSTAGRAM (FIXED)
 ================================ */
-function shareInstagram() {
-    // ⚠️ MUST NOT be async (gesture-safe)
-    getRandomPost("instagram").then(post => {
-        if (!post) return;
+async function shareInstagram() {
+    const post = await getRandomPost("instagram");
+    if (!post) return;
 
-        const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
-        const caption = `${post.content}\n\n${hashtags}`;
+    const hashtags = post.hashtags.map(h => `#${h}`).join(" ");
+    const caption = `${post.content}\n\n${hashtags}`;
 
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
 
-        if (isMobile) {
-            // 1️⃣ OPEN APP FIRST (gesture-safe)
-            window.location.href = "instagram://app";
+    // ✅ ANDROID + CHROME (FULL SHARE)
+    if (isAndroid && navigator.canShare) {
+        try {
+            const response = await fetch(post.image);
+            const blob = await response.blob();
+            const file = new File([blob], "post.jpg", { type: blob.type });
 
-            // 2️⃣ COPY TEXT AFTER
-            setTimeout(() => {
-                navigator.clipboard.writeText(caption).catch(() => {});
-            }, 100);
-
-            // 3️⃣ FALLBACK IF APP NOT OPENED
-            setTimeout(() => {
-                if (document.visibilityState === "visible") {
-                    window.open("https://www.instagram.com/", "_blank");
-                }
-            }, 1200);
-        } else {
-            // Desktop
-            navigator.clipboard.writeText(caption).then(() => {
-                window.open("https://www.instagram.com/", "_blank");
-            });
+            if (navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    text: caption,
+                    title: "Share to Instagram"
+                });
+                return;
+            }
+        } catch (err) {
+            console.warn("Web Share failed, falling back", err);
         }
-    });
+    }
+
+    // 🔁 FALLBACK (iOS / Desktop)
+    try {
+        await navigator.clipboard.writeText(caption);
+    } catch {}
+
+    window.open(post.image, "_blank");
+
+    setTimeout(() => {
+        window.location.href = "instagram://app";
+    }, 300);
 }

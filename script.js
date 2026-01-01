@@ -15,18 +15,12 @@ async function getRandomPost(platform) {
     try {
         const res = await fetch(`content/${platform}.json`);
         if (!res.ok) throw new Error(`Failed to fetch ${platform} content`);
-
         const data = await res.json();
-
-        // Randomize if array
-        if (Array.isArray(data)) {
-            return data[Math.floor(Math.random() * data.length)];
-        }
-
-        return data;
+        return Array.isArray(data)
+            ? data[Math.floor(Math.random() * data.length)]
+            : data;
     } catch (err) {
-        console.error(`Error loading ${platform} content:`, err);
-        alert(`Failed to load ${platform} content. Please try again.`);
+        console.error(err);
         return null;
     }
 }
@@ -34,26 +28,18 @@ async function getRandomPost(platform) {
 /* ===============================
    💼 LINKEDIN
 ================================ */
-/* ===============================
-   💼 LINKEDIN (CLEAN URL VERSION)
-================================ */
 async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
     if (!post) return;
 
-    // ⚠️ IMPORTANT:
-    // We send ONLY the ID, NOT the content
-    const postId = post.id;
-
     const sharePage =
-        `https://anokhatechfest.com/share.html?id=${postId}&cb=${Date.now()}`;
+        `https://anokhatechfest.com/share.html?id=${post.id}&cb=${Date.now()}`;
 
     window.open(
         `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`,
         "_blank"
     );
 }
-
 
 /* ===============================
    🐦 TWITTER (X)
@@ -62,51 +48,64 @@ async function shareTwitter() {
     const post = await getRandomPost("twitter");
     if (!post) return;
 
-    const tweetText = post.url ? `${post.text}\n${post.url}` : post.text;
-    const message = encodeURIComponent(tweetText);
+    const tweetText = post.url
+        ? `${post.text}\n${post.url}`
+        : post.text;
 
+    const message = encodeURIComponent(tweetText);
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
-        // Try Twitter app first
         window.location.href = `twitter://post?message=${message}`;
-
-        // Fallback to web
         setTimeout(() => {
             if (document.visibilityState === "visible") {
-                window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank');
+                window.open(
+                    `https://twitter.com/intent/tweet?text=${message}`,
+                    "_blank"
+                );
             }
         }, 500);
     } else {
-        // Desktop
-        window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank');
+        window.open(
+            `https://twitter.com/intent/tweet?text=${message}`,
+            "_blank"
+        );
     }
 }
 
 /* ===============================
-   📸 INSTAGRAM
+   📸 INSTAGRAM (FIXED)
 ================================ */
-async function shareInstagram() {
-    const post = await getRandomPost("instagram");
-    if (!post) return;
+function shareInstagram() {
+    // ⚠️ MUST NOT be async (gesture-safe)
+    getRandomPost("instagram").then(post => {
+        if (!post) return;
 
-    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
-    const caption = `${post.content}\n\n${hashtags}`;
+        const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
+        const caption = `${post.content}\n\n${hashtags}`;
 
-    try {
-        await navigator.clipboard.writeText(caption);
-        
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
         if (isMobile) {
-            alert("Caption copied! Opening Instagram app...");
+            // 1️⃣ OPEN APP FIRST (gesture-safe)
             window.location.href = "instagram://app";
+
+            // 2️⃣ COPY TEXT AFTER
+            setTimeout(() => {
+                navigator.clipboard.writeText(caption).catch(() => {});
+            }, 100);
+
+            // 3️⃣ FALLBACK IF APP NOT OPENED
+            setTimeout(() => {
+                if (document.visibilityState === "visible") {
+                    window.open("https://www.instagram.com/", "_blank");
+                }
+            }, 1200);
         } else {
-            alert("Caption copied to clipboard! Opening Instagram...\n\nPaste it when creating your post.");
-            window.open("https://www.instagram.com/", '_blank');
+            // Desktop
+            navigator.clipboard.writeText(caption).then(() => {
+                window.open("https://www.instagram.com/", "_blank");
+            });
         }
-    } catch (err) {
-        console.error("Clipboard copy failed:", err);
-        alert("Failed to copy caption. Please try again.");
-    }
+    });
 }

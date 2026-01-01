@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<title>Anokha TechFair</title>
+
+<!-- LinkedIn Open Graph tags -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anokha TechFair & Exhibitions">
+<meta property="og:description" content="Loading post...">
+<meta property="og:url" content="https://anokhatechfest.com/share.html">
+
+<script>
+(function () {
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"), 10);
+    if (!id) return;
+
+    fetch("content/linkedin.json")
+        .then(res => res.json())
+        .then(posts => {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+
+            const hashtags = post.hashtags.map(h => `#${h}`).join(" ");
+            const text = `${post.content}\n\n${hashtags}`;
+
+            // 🔑 THIS is what LinkedIn reads
+            document
+                .querySelector('meta[property="og:description"]')
+                .setAttribute("content", text);
+        });
+})();
+</script>
+</head>
+
+<body>
+<!-- Body content does NOT matter for LinkedIn -->
+</body>
+</html>

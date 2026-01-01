@@ -10,8 +10,9 @@
 body {
     font-family: "Inter", "Segoe UI", system-ui, sans-serif;
     background-color: #f7f3e9;
-    padding: 28px 16px;
     color: #3f2d68;
+    padding: 24px 14px;
+    line-height: 1.5;
 }
 
 /* =========================
@@ -26,13 +27,14 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
     flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
 .logo-container img {
+    max-width: 90px;
     height: auto;
-    max-width: 100%;
 }
 
 /* =========================
@@ -42,7 +44,7 @@ body {
     max-width: 480px;
     margin: auto;
     background: #ffffff;
-    padding: 30px 22px;
+    padding: 26px 20px;
     border-radius: 16px;
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
     text-align: center;
@@ -52,14 +54,14 @@ body {
    TEXT
 ========================= */
 h1 {
-    font-size: 1.8rem;
-    margin-bottom: 12px;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
     color: #5b4b8a;
 }
 
 .subtitle {
-    font-size: 0.95rem;
-    margin-bottom: 24px;
+    font-size: 0.9rem;
+    margin-bottom: 22px;
     color: #5e5647;
 }
 
@@ -68,21 +70,22 @@ h1 {
 ========================= */
 .btn {
     width: 100%;
-    padding: 14px;
+    padding: 14px 12px;
     margin-bottom: 14px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 2px solid #5b4b8a;
     background: #ffffff;
     color: #5b4b8a;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 
 .btn:active {
     background: #5b4b8a;
     color: #ffffff;
+    transform: scale(0.98);
 }
 
 /* Platform subtle differentiation */
@@ -102,20 +105,61 @@ h1 {
    FOOTER
 ========================= */
 .footer {
-    margin-top: 18px;
+    margin-top: 16px;
     font-size: 0.8rem;
     color: #5e5647;
 }
 
 /* =========================
-   RESPONSIVE
+   TABLET VIEW (≥600px)
 ========================= */
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.5rem;
+@media (min-width: 600px) {
+
+    body {
+        padding: 32px 18px;
     }
 
-    .logo-container {
-        gap: 14px;
+    .container {
+        max-width: 520px;
+        padding: 30px 26px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        font-size: 1rem;
+        padding: 15px;
+    }
+}
+
+/* =========================
+   DESKTOP VIEW (≥900px)
+========================= */
+@media (min-width: 900px) {
+
+    body {
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 560px;
+    }
+
+    .logo-container img {
+        max-width: 110px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
     }
 }

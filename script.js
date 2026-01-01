@@ -8,9 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (instagramBtn) instagramBtn.addEventListener("click", shareInstagram);
 });
 
-/* ===============================
-   FETCH + RANDOMIZE POST
-================================ */
 async function getRandomPost(platform) {
     try {
         const res = await fetch(`content/${platform}.json`);
@@ -25,9 +22,6 @@ async function getRandomPost(platform) {
     }
 }
 
-/* ===============================
-   💼 LINKEDIN
-================================ */
 async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
     if (!post) return;
@@ -35,11 +29,9 @@ async function shareLinkedIn() {
     const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
     const text = `${post.content}\n\n${hashtags}`;
 
-    // 1️⃣ OPEN LINKEDIN FIRST (gesture-safe)
     const linkedInUrl = "https://www.linkedin.com/feed/?shareActive=true";
     window.open(linkedInUrl, "_blank");
 
-    // 2️⃣ COPY CONTENT AFTER
     setTimeout(() => {
         navigator.clipboard.writeText(text)
             .then(() => {
@@ -49,11 +41,6 @@ async function shareLinkedIn() {
     }, 100);
 }
 
-
-
-/* ===============================
-   🐦 TWITTER (X)
-================================ */
 async function shareTwitter() {
     const post = await getRandomPost("twitter");
     if (!post) return;
@@ -83,11 +70,7 @@ async function shareTwitter() {
     }
 }
 
-/* ===============================
-   📸 INSTAGRAM (FIXED)
-================================ */
 function shareInstagram() {
-    // ⚠️ MUST NOT be async (gesture-safe)
     getRandomPost("instagram").then(post => {
         if (!post) return;
 
@@ -97,10 +80,8 @@ function shareInstagram() {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
         if (isMobile) {
-            // 1️⃣ OPEN APP FIRST (gesture-safe)
             window.location.href = "instagram://app";
 
-            // 2️⃣ COPY TEXT AFTER
             setTimeout(() => {
                 navigator.clipboard.writeText(caption)
                     .then(() => {
@@ -109,14 +90,12 @@ function shareInstagram() {
                     .catch(() => {});
             }, 100);
 
-            // 3️⃣ FALLBACK IF APP NOT OPENED
             setTimeout(() => {
                 if (document.visibilityState === "visible") {
                     window.open("https://www.instagram.com/", "_blank");
                 }
             }, 1200);
         } else {
-            // Desktop
             navigator.clipboard.writeText(caption).then(() => {
                 alert("✅ Content copied to clipboard.\nPaste it while posting on Instagram.");
                 window.open("https://www.instagram.com/", "_blank");

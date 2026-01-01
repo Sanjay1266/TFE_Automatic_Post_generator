@@ -1,14 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("linkedinBtn").addEventListener("click", shareLinkedIn);
-    document.getElementById("twitterBtn").addEventListener("click", shareTwitter);
-    document.getElementById("instagramBtn").addEventListener("click", shareInstagram);
+    const linkedinBtn = document.getElementById("linkedinBtn");
+    const twitterBtn = document.getElementById("twitterBtn");
+    const instagramBtn = document.getElementById("instagramBtn");
+
+    if (linkedinBtn) linkedinBtn.addEventListener("click", shareLinkedIn);
+    if (twitterBtn) twitterBtn.addEventListener("click", shareTwitter);
+    if (instagramBtn) instagramBtn.addEventListener("click", shareInstagram);
 });
 
-/* Fetch JSON and return a random post */
+/* ===============================
+   FETCH + RANDOMIZE POST
+================================ */
 async function getRandomPost(platform) {
     try {
         const res = await fetch(`content/${platform}.json`);
-        if (!res.ok) return null;
+        if (!res.ok) throw new Error("Failed to fetch content");
 
         const data = await res.json();
 
@@ -17,38 +23,55 @@ async function getRandomPost(platform) {
             return data[Math.floor(Math.random() * data.length)];
         }
 
-        // Fallback (single object)
+        // Fallback for single object
         return data;
     } catch (err) {
-        console.error("Failed to load content:", err);
+        console.error(`Error loading ${platform} content:`, err);
         return null;
     }
 }
 
-/* 🔵 LINKEDIN — TEXT ONLY */
+/* ===============================
+   🔵 LINKEDIN
+   (Uses OG-based share.html)
+================================ */
 async function shareLinkedIn() {
     const post = await getRandomPost("linkedin");
     if (!post) return;
 
     const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
-    const text = encodeURIComponent(`${post.content}\n\n${hashtags}`);
+    const fullText = `${post.content}\n\n${hashtags}`;
+    const encodedText = encodeURIComponent(fullText);
+
+    // share.html MUST be publicly hosted
+    const sharePage =
+        `https://yourdomain.com/share.html?text=${encodedText}&cb=${Date.now()}`;
 
     window.location.href =
-        `https://www.linkedin.com/sharing/share-offsite/?summary=${text}`;
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePage)}`;
 }
 
-/* 🟦 TWITTER (X) — TEXT ONLY */
+/* ===============================
+   🟦 TWITTER (X)
+================================ */
 async function shareTwitter() {
     const post = await getRandomPost("twitter");
     if (!post) return;
 
-    const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
-    const message = encodeURIComponent(`${post.content}\n\n${hashtags}`);
+    // Build tweet text
+    const tweetText = post.url
+        ? `${post.text}\n${post.url}`
+        : post.text;
+
+    const message = encodeURIComponent(tweetText);
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
+        // Try opening X app
         window.location.href = `twitter://post?message=${message}`;
+
+        // Browser fallback
         setTimeout(() => {
             if (document.visibilityState === "visible") {
                 window.location.href =
@@ -56,12 +79,16 @@ async function shareTwitter() {
             }
         }, 300);
     } else {
+        // Desktop browser
         window.location.href =
             `https://twitter.com/intent/tweet?text=${message}`;
     }
 }
 
-/* 🟣 INSTAGRAM — COPY TEXT ONLY */
+/* ===============================
+   🟣 INSTAGRAM
+   (Clipboard + open app/site)
+================================ */
 async function shareInstagram() {
     const post = await getRandomPost("instagram");
     if (!post) return;
@@ -69,7 +96,12 @@ async function shareInstagram() {
     const hashtags = post.hashtags.map(tag => `#${tag}`).join(" ");
     const caption = `${post.content}\n\n${hashtags}`;
 
-    await navigator.clipboard.writeText(caption);
+    try {
+        await navigator.clipboard.writeText(caption);
+    } catch (err) {
+        console.error("Clipboard copy failed:", err);
+        return;
+    }
 
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 

@@ -1,0 +1,84 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #0b0b0b;
+    color: #ffffff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Main card */
+.container {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 35px 30px;
+    border-radius: 14px;
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Heading */
+.container h1 {
+    font-size: 1.5rem;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+}
+
+/* Text */
+.container p {
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+    color: #333333;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 2px solid #000000;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Platform subtle differentiation */
+.linkedin {
+    border-style: solid;
+}
+
+.twitter {
+    border-style: dashed;
+}
+
+.instagram {
+    border-style: dotted;
+}
+
+/* Footer */
+footer {
+    margin-top: 18px;
+    font-size: 0.75rem;
+    color: #666666;
+}

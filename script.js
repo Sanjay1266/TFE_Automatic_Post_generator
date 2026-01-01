@@ -20,11 +20,9 @@ async function shareLinkedIn() {
     const data = await getPost("linkedin");
     if (!data) return;
 
-    const appLink = `linkedin://shareArticle?mini=true&url=${encodeURIComponent(data.url)}`;
-    const webLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(data.url)}`;
-
-    window.location.href = appLink;
-    setTimeout(() => window.location.href = webLink, 1500);
+    // Try app first (one-click)
+    window.location.href =
+        `linkedin://shareArticle?mini=true&url=${encodeURIComponent(data.url)}`;
 }
 
 /* Twitter (X) */
@@ -34,11 +32,9 @@ async function shareTwitter() {
 
     const message = encodeURIComponent(`${data.text} ${data.url}`);
 
-    const appLink = `twitter://post?message=${message}`;
-    const webLink = `https://twitter.com/intent/tweet?text=${message}`;
-
-    window.location.href = appLink;
-    setTimeout(() => window.location.href = webLink, 1500);
+    // Try app first (text prefilled)
+    window.location.href =
+        `twitter://post?message=${message}`;
 }
 
 /* Instagram */
@@ -49,9 +45,6 @@ async function shareInstagram() {
     // Copy caption silently
     await navigator.clipboard.writeText(data.text);
 
-    const appLink = "instagram://app";
-    const webLink = "https://www.instagram.com";
-
-    window.location.href = appLink;
-    setTimeout(() => window.location.href = webLink, 1500);
+    // Open app directly
+    window.location.href = "instagram://app";
 }

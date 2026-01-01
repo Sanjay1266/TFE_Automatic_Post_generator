@@ -1,54 +1,47 @@
-// Wait until HTML is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-
-    document.getElementById("linkedinBtn")
-        .addEventListener("click", shareLinkedIn);
-
-    document.getElementById("twitterBtn")
-        .addEventListener("click", shareTwitter);
-
-    document.getElementById("instagramBtn")
-        .addEventListener("click", shareInstagram);
-
+    document.getElementById("linkedinBtn").addEventListener("click", shareLinkedIn);
+    document.getElementById("twitterBtn").addEventListener("click", shareTwitter);
+    document.getElementById("instagramBtn").addEventListener("click", shareInstagram);
 });
 
-// Fetch post content
 async function getPost(platform) {
     try {
-        const response = await fetch(`content/${platform}.json`);
-        if (!response.ok) {
-            throw new Error("Content file not found");
-        }
-        return await response.json();
-    } catch (err) {
-        console.error("Failed to load content:", err);
+        const res = await fetch(`content/${platform}.json`);
+        if (!res.ok) throw new Error("Content not found");
+        return await res.json();
+    } catch (e) {
+        console.error(e);
         return null;
     }
 }
 
-// LinkedIn
+/* LinkedIn */
 async function shareLinkedIn() {
     const data = await getPost("linkedin");
     if (!data) return;
 
-    const shareURL =
-        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(data.url)}`;
+    const appLink = `linkedin://shareArticle?mini=true&url=${encodeURIComponent(data.url)}`;
+    const webLink = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(data.url)}`;
 
-    window.open(shareURL, "_blank");
+    window.location.href = appLink;
+    setTimeout(() => window.location.href = webLink, 1500);
 }
 
-// Twitter (X)
+/* Twitter (X) */
 async function shareTwitter() {
     const data = await getPost("twitter");
     if (!data) return;
 
-    const shareURL =
-        `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.text)}&url=${encodeURIComponent(data.url)}`;
+    const message = encodeURIComponent(`${data.text} ${data.url}`);
 
-    window.open(shareURL, "_blank");
+    const appLink = `twitter://post?message=${message}`;
+    const webLink = `https://twitter.com/intent/tweet?text=${message}`;
+
+    window.location.href = appLink;
+    setTimeout(() => window.location.href = webLink, 1500);
 }
 
-// Instagram (mobile-friendly flow)
+/* Instagram */
 async function shareInstagram() {
     const data = await getPost("instagram");
     if (!data) return;
@@ -56,6 +49,9 @@ async function shareInstagram() {
     // Copy caption silently
     await navigator.clipboard.writeText(data.text);
 
-    // Open Instagram directly
-    window.open("https://www.instagram.com", "_blank");
+    const appLink = "instagram://app";
+    const webLink = "https://www.instagram.com";
+
+    window.location.href = appLink;
+    setTimeout(() => window.location.href = webLink, 1500);
 }

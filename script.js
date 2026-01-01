@@ -85,34 +85,43 @@ async function shareInstagram() {
 
     const isAndroid = /Android/i.test(navigator.userAgent);
 
-    // ✅ ANDROID + CHROME (FULL SHARE)
+    // ✅ ANDROID: FULL AUTO SHARE (IMAGE + TEXT)
     if (isAndroid && navigator.canShare) {
         try {
             const response = await fetch(post.image);
             const blob = await response.blob();
-            const file = new File([blob], "post.jpg", { type: blob.type });
+            const file = new File([blob], "anokha_post.jpg", {
+                type: blob.type
+            });
 
             if (navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
                     text: caption,
-                    title: "Share to Instagram"
+                    title: "Share Anokha TechFair Post"
                 });
-                return;
+                return; // 🚀 DONE — Instagram will open ready
             }
         } catch (err) {
             console.warn("Web Share failed, falling back", err);
         }
     }
 
-    // 🔁 FALLBACK (iOS / Desktop)
+    // 🔁 FALLBACK (iOS / Desktop / Unsupported browsers)
     try {
         await navigator.clipboard.writeText(caption);
     } catch {}
 
+    // Open image so user can save it
     window.open(post.image, "_blank");
 
+    // Open Instagram app/site
     setTimeout(() => {
-        window.location.href = "instagram://app";
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.location.href = "instagram://app";
+        } else {
+            window.open("https://www.instagram.com/", "_blank");
+        }
     }, 300);
 }
+

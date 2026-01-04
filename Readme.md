@@ -80,15 +80,4 @@ project/
 
 ---
 
-✅ This is now:
-- **One single Markdown file**
-- Contains **all information**
-- Includes **flow, architecture, features, file structure**
-- Clean, professional, and submission-ready
 
-If you want, I can also:
-- Reduce this to a **1-page abstract**
-- Convert it into **project report format**
-- Prepare **viva / review explanation points**
-
-Just tell me 👍
